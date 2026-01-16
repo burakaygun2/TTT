@@ -1,0 +1,60 @@
+## RADIAL PROFILE FILE
+'/nfshk2/aygun/Ganymede_manuscript/profiles/processed_profiles/p0/Gan_prof_152_0.dat'
+## OUTPUT DIRECTORY (1)
+'/nfshk/aygun/Desktop/eta0152_3'
+
+## NAME OF THE BODY (1)
+'Titan'
+## SINGLE OR MULTI LAYER MODEL (3): m --> Multi layer  s --> Single layer; Nondimensional --> n   Dimensional --> d; Boundary conditions (if single layer)
+m, d, 'fs', 'fsv'
+## SINGLE LAYER MODEL (2): *** ---> Boundary forcing location; *** ---> Bottom gravitational acceleration (ms-2)
+1.42, 1.15
+## MODEL (1): 0 --> INCOMPRESSIBLE      1--> COMPRESSIBLE
+1
+## FORMULATION (1): 0 --> DISPLACEMENT  1 --> VELCITY
+1
+## PERIOD (2): ***, s --> SECONDS   d --> DAYS
+15.95, d
+## NUMBER OF TIME STEPS PER PERIOD (1):
+1000
+## ECCENTRICITY & OBLIQUITY (2):
+0.0288, 0.3
+## INITIAL JMAX (3): *** --> INITIAL, *** --> MAX JMAX  (INITIAL CAN EVOLVE IF NECCESSARY TO MAX JMAX), MMax Fixed
+10, 100, 2
+## INERTIA SWITCH (1): 1 --> ON   0 --> OFF
+1
+## CORIOLIS SWITCH (1): 1 --> ON   0 --> OFF
+1
+## V.GRAD(V) SWITCH (1): 1 --> ON   0 --> OFF
+0
+## SELF-GRAVITY SWITCH (1):  1 --> ON   0 --> OFF
+1
+# FINAL PERIOD (1)
+100
+## OCEAN STATUS (1): v --> VISCOUS  H --> HYDROSTATIC
+v
+## OVERRIDE OCEAN VISCOSITY (3): 0 --> FROM PROFILE 1 --> OVERRIDE, VISOCISTY EXPONENT, HYPERVISCOSITY 0 --> NO 1 --> YES
+1, 2, 0
+## SOLID LAYER STATUS (1):  e --> ELASTIC   m --> Maxwell 
+m
+## CORE STATUS (1): h --> HYDROSTATIC   n --> ACCORDING TO PROFILE FILE
+h
+## ANDRADE PARAMETERS (2): ALPHA, ZETA
+0.24, 1.0
+
+## CHECKPOINT AT EVERY TIME STEP (1):
+5000
+
+## WRITING THE OUTPUT TO FILES (4): DENSITY, VELOCITY, STRESS, DISPLACEMENT
+0, 0, 0, 0
+
+# OUTPUT VARIABLES AFTER (2): ***, p --> PERIOD i --> TIME STEP
+2, p
+## WRITE OUTPUT AT EVERY TIME STEP (1):
+20
+## START SIMULATION FROM (1): 0 --> FROM 0TH INITIAL CONDITION -1 --> LAST CHECKPOINT // other poistive integer corresponds that checkpoint
+0
+## TIDAL POTENTIAL (1): 0 --> ECCENTRICITY TIDES  1 -- MOON-MOON TIDES (GANYMEDE ONLY)  2 --> LUNAR TIDES ON EARLY EARTH
+0
+## CRANK-NICHOLSON SCHEME (1):  Crank-Nicholson scheme 0.5: CN 1: implicit
+1.0
