@@ -1,7 +1,8 @@
+## --- BA's path ---
 ## RADIAL PROFILE FILE
-'/nfsmk/kihoulou/GEO/TTT/TTT/profiles/prof_set1/Titan_167km_1.00km_2.00Pas.dat'
+'/nfshk2/aygun/Ganymede_manuscript/profiles/processed_profiles/p0/Gan_prof_152_0.dat'
 ## OUTPUT DIRECTORY (1)
-'/nfsmk/kihoulou/GEO/TTT/TTT/results'
+'/nfshk/aygun/Desktop/eta0152_3'
 
 ## NAME OF THE BODY (1)
 'Titan'
