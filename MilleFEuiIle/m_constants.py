@@ -1,0 +1,31 @@
+import numpy as np
+
+"""
+Useful physical constants.
+
+"""
+
+# Time related constants
+hr  = 3600.0
+day = 3600.0*24
+yr  = 3600.0*24*365.25
+kyr = 3600.0*24*365.25*1e3
+Myr = 3600.0*24*365.25*1e6
+
+# Molar gass constant
+R_gas   = 8.314   # J K^-1 mol^-1
+
+# Insolation at 1 AU from sun
+insol_1AU = 1360.0*np.sin(np.pi*90.0/180)  # W m^2
+
+# Stefan-Boltzmann constant
+SB_const = 5.67e-8 		# W m^−2 K^−4.
+
+# Ice activation volume
+V_act = -1.3e-5
+
+# TIdal potential parameters
+GR = 6.67e-11
+MP = 1.89e27
+RS = 1561e3
+AA = 670000e3
