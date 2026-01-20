@@ -1,0 +1,12 @@
+# --- MilleFEuiIle ---
+*.out
+__pycache__ 
+main_*.py
+data*/
+
+# --- Oceanus ---
+we'll see...
+
+# --- Other ---
+*.png
+*.pdf
