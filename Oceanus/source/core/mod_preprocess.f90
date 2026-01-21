@@ -58,8 +58,8 @@ subroutine initial_read
     if(unit_period == 'd') rotation_period = rotation_period * day2sec
     obl = obl * deg_to_rad
     if(temp_radius(1) - temp_radius(2)>0.0) call reverse_temps
-    temp_shear_m = temp_shear_m * GPa_to_Pa
-    temp_bulk_m  = temp_bulk_m  * GPa_to_Pa
+    ! temp_shear_m = temp_shear_m * GPa_to_Pa
+    ! temp_bulk_m  = temp_bulk_m  * GPa_to_Pa
 end subroutine initial_read
 
 subroutine number_of_layers

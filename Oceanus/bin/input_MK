@@ -1,7 +1,7 @@
 ## RADIAL PROFILE FILE
-'/nfshk2/aygun/TTT/profiles/titan_test_profile.dat'
+'/nfsmk/kihoulou/GEO/TTT/TTT/profiles/prof_set1/Titan_167km_1.00km_2.00Pas.dat'
 ## OUTPUT DIRECTORY (1)
-'/nfshk2/aygun/TTT/single_Oceanus_run'
+'/nfsmk/kihoulou/GEO/TTT/TTT/results'
 
 ## NAME OF THE BODY (1)
 'Titan'
@@ -30,7 +30,7 @@ m, d, 'fs', 'fsv'
 ## SELF-GRAVITY SWITCH (1):  1 --> ON   0 --> OFF
 1
 # FINAL PERIOD (1)
-10
+100
 ## OCEAN STATUS (1): v --> VISCOUS  H --> HYDROSTATIC
 v
 ## OVERRIDE OCEAN VISCOSITY (3): 0 --> FROM PROFILE 1 --> OVERRIDE, VISOCISTY EXPONENT, HYPERVISCOSITY 0 --> NO 1 --> YES
