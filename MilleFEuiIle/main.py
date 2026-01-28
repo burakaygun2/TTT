@@ -248,6 +248,8 @@ def run_code():
         EqClass.conductivity.assign(project(k(EqClass.Temp, EqClass.composition), ElemClass.sDG0))
         EqClass.heating.assign(project(tidal_heating(EqClass.visc), ElemClass.sDG0))
 
+        EqClass.q_top_time.assign(EqClass.q_top_time*(step - 1.0)/step + EqClass.q_top/step)
+
         # --- Check whether to save results? ---> If yes, save them.
         step_output, output_now = Output_Timing(step, step_output, t, time_output)
         if (output_now == True):
@@ -259,6 +261,8 @@ def run_code():
             FilesClass.Save_Paraview(t)
             FilesClass.Save_HDF5(step_output, step, EqClass.dt, t)
 
+            EqClass.q_top_time_prev = EqClass.q_top_time
+
         code_now        = time.time()
         total_time      = (code_now - code_start)/3600.0
         timestep_time   = (code_now - code_now_k)
@@ -267,6 +271,7 @@ def run_code():
         FilesClass.write_statistic(t, step, stat_output,\
                                 q_cond_top  = EqClass.q_cond_top,\
                                 q_top       = EqClass.q_top,\
+                                q_top_time       = EqClass.q_top_time,\
                                 q_bot       = EqClass.q_bot,\
                                 v           = EqClass.v_k,\
                                 avg_h_bot   = EqClass.h_bot_aver,\
@@ -276,10 +281,20 @@ def run_code():
                                 time        = total_time,\
                                 timestep    = timestep_time)
         
-        if (float(EqClass.thickness_now) > 167e3):
+        # --- Shell thickness termination criteria ---
+        # if (float(EqClass.thickness_now) > 167e3):
+        #     if (rank == 0):
+        #         print("\n----------------------------------------------")
+        #         print("\tSubsurface ocean completely frozen.")
+        #         print("\tStep:     ", '{:d}'.format(step))
+        #         print("\tTime:     ", '{:.3e}'.format(float(t/time_units)), time_units_string)
+        #         print("----------------------------------------------\n")
+        #     break
+
+        if (float(t) > 2*Myr and float(EqClass.q_top_time) > float(EqClass.q_top_time_prev)*0.95 and float(EqClass.q_top_time) < float(EqClass.q_top_time_prev)*1.05):
             if (rank == 0):
                 print("\n----------------------------------------------")
-                print("\tSubsurface ocean completely frozen.")
+                print("\tSurface heat flux stabilized.")
                 print("\tStep:     ", '{:d}'.format(step))
                 print("\tTime:     ", '{:.3e}'.format(float(t/time_units)), time_units_string)
                 print("----------------------------------------------\n")

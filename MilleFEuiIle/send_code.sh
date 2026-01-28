@@ -1,8 +1,8 @@
 # --- The sending script for the Department of Geophysics cluster ---
 # --- Target machine, user and directory ---
-machine="nfsy6"
+machine="nfsy5"
 user="kihoulou"
-dir="Titan_clathrates" 
+dir="TTT" 
 
 # --- Launching script ---
 cp run_MilleFEuiIle.sh /$machine/$user/$dir

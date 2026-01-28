@@ -138,6 +138,9 @@ class Equations:
         self.q_bot = Constant(1.0)
         self.q_cond_top = Constant(1.0)
 
+        self.q_top_time = Constant(1.0)
+        self.q_top_time_prev = Constant(1.0)
+
         self._lambda = Constant(1.0)
 
         self.v_aver = Constant(1.0)
@@ -805,14 +808,14 @@ class Equations:
         
         self.shear_modulus.assign(project(G(self.composition), self.sDG0))
 
-    def read_dissipation(self):
-        self.thickness_now.assign(0.5*(assemble(self.unit_scalar*self.ds(4)) + assemble(self.unit_scalar*self.ds(3))))
-        value = 0
-        for i in range(len(dissipation)):
-            if (float(self.thickness_now)/1e3 < dissipation[i][0]):
-                value = dissipation[i][1]*1e12/(4.0*np.pi*(2570e3 - float(self.thickness_now)/1e3)**2)
+    # def read_dissipation(self):
+    #     self.thickness_now.assign(0.5*(assemble(self.unit_scalar*self.ds(4)) + assemble(self.unit_scalar*self.ds(3))))
+    #     value = 0
+    #     for i in range(len(dissipation)):
+    #         if (float(self.thickness_now)/1e3 < dissipation[i][0]):
+    #             value = dissipation[i][1]*1e12/(4.0*np.pi*(2570e3 - float(self.thickness_now)/1e3)**2)
 
-        return value
+    #     return value
         
     def compute_u(self):
         """ 

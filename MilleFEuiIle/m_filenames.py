@@ -247,6 +247,11 @@ class SaveFiles:
                 if (rank == 0):
                     file.write(("%.5E\t\t")%(value*1e3))
 
+            if (arg == "q_top_time"):
+                value = kwargs["q_top_time"]
+                if (rank == 0):
+                    file.write(("%.5E\t\t")%(value*1e3))
+
             if (arg == "q_bot"):
                 value = kwargs["q_bot"]
                 if (rank == 0):

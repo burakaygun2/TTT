@@ -12,20 +12,20 @@ viscosity_exponent = int(sys.argv[2])
 
 
 # --- Read the file with dissipation ---
-infile = open("dissipation_data.txt", "r") 
-# infile = open("dissipation.dat", "r") 
-lines = infile.readlines() 
+# infile = open("dissipation_data.txt", "r") 
+# # infile = open("dissipation.dat", "r") 
+# lines = infile.readlines() 
 
-dissipation = []
+# dissipation = []
 
-header = True
-for line in lines:
-   if (header == True):
-       header = False
-       continue
-   else:
-      sline = line.split(" ")
-      dissipation.append([float(sline[0]), float(sline[1])])
+# header = True
+# for line in lines:
+#    if (header == True):
+#        header = False
+#        continue
+#    else:
+#       sline = line.split(" ")
+#       dissipation.append([float(sline[0]), float(sline[1])])
 
 mesh_movement = "ALE"
 initial_topography = False
@@ -164,11 +164,11 @@ Paraview_Output_Ini = ["temperature", "conductivity"]
 # q_bot 	= Heat flux over the bottom boundary
 # time		= Duration of the simulation (hours)
 # timestep	= Duration of the time step (seconds)
-stat_output = ["q_top", "q_bot", "dissipation", "thickness", "time", "timestep"]
+stat_output = ["q_top", "q_top_time", "q_bot", "time", "timestep"]
 
 # --- Headers for the columns in the text file
 # --- Up to the user (order corredponding to "stat_output").
-stat_header = ["q_top (mW/m2)", "q_bot (mW/m2)", "q_int (mW/m2)", "D (km)", "Time (h)", "dt (s)"]
+stat_header = ["q_top (mW/m2)", "q_topT (mW/m2)", "q_bot (mW/m2)", "Time (h)", "dt (s)"]
 
 monitor_cache = False
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -493,7 +493,7 @@ error_type          = "maximum" # "maximum or integrated"
 
 # Boundary conditions for velocity (free_slip, no_slip, free surface, velocity, velocity_x, velocity_y)
 BC_Stokes_problem = [["free_slip"],#1 top boundary (1)
-                     ["free_surface"],#2 bottom boundary (2)
+                     ["free_slip"],#2 bottom boundary (2)
                      ["free_slip"],#3 left boundary (3)
                      ["free_slip"]]#4 right boundary (3)
 """
@@ -582,7 +582,7 @@ nonlinear_heat_equation = False
 
 # --- Boundary condition for heat transfer equation ---
 BC_heat_transfer   = [["temp", 90.0],     # top boundary    (1)
-                     ["temp", 270.0],     # bottom boundary (2)
+                     ["temp", 265.0],     # bottom boundary (2)
                      ["heat_flux", 0.0],  # left boundary   (3)
                      ["heat_flux", 0.0]]  # right boundary  (4)
 """
