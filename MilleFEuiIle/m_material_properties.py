@@ -77,12 +77,14 @@ def k(Temp, composition):
         """
 
         k_H2O = 567.0/Temp
-        if (clatrates_thickness > 0.0):
-                k_CH4 = 0.5
-                phi = Expression("(tanh(-(x[1] - h + ch)/2.0) + 1.0)/2.0", ch=clatrates_thickness, h=height, degree=2) 
-                return k_CH4 + phi*(k_H2O-k_CH4)
-        else:
-                return k_H2O
+        return k_H2O
+
+        # if (clatrates_thickness > 0.0):
+        #         k_CH4 = 0.5
+        #         phi = Expression("(tanh(-(x[1] - h + ch)/2.0) + 1.0)/2.0", ch=clatrates_thickness, h=height, degree=2) 
+        #         return k_CH4 + phi*(k_H2O-k_CH4)
+        # else:
+        #         return k_H2O
 
 def cp(Temp, composition):
         """Evaluates the specific heat capacity at constant pressure :math:`c_p`\ . 

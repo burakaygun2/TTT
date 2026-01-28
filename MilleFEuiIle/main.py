@@ -122,8 +122,8 @@ def run_code():
         EqClass.top_length.assign(assemble(EqClass.unit_scalar*MeshClass.ds(1)))
 
         if (initial_topography == True):
-            EqClass.h_top.assign(project(h_top_ini, ElemClass.sCG1))
-            EqClass.h_bot.assign(project(h_bot_ini, ElemClass.sCG1))
+            # EqClass.h_top.assign(project(h_top_ini, ElemClass.sCG1))
+            # EqClass.h_bot.assign(project(h_bot_ini, ElemClass.sCG1))
 
             EqClass.h2_top.assign(EqClass.h_top)
             EqClass.h2_bot.assign(EqClass.h_bot)
@@ -242,6 +242,7 @@ def run_code():
         # --- Postprocessing ---
         EqClass.top_length.assign(assemble(EqClass.unit_scalar*MeshClass.ds(1)))
         EqClass.q_top.assign(assemble(dot(-k(EqClass.Temp, EqClass.composition)*nabla_grad(EqClass.Temp), EqClass.normal)*MeshClass.ds(1)) / EqClass.top_length)
+        EqClass.q_bot.assign(assemble(-dot(-k(EqClass.Temp, EqClass.composition)*nabla_grad(EqClass.Temp), EqClass.normal)*MeshClass.ds(2)) /assemble(EqClass.unit_scalar*MeshClass.ds(2)))
         EqClass.log10_visc.assign(project(ln(EqClass.visc)/ln(10.0), ElemClass.sDG0))
         EqClass.cohesion.assign(project(cohesion(EqClass.plastic_strain), ElemClass.sDG0))
         EqClass.conductivity.assign(project(k(EqClass.Temp, EqClass.composition), ElemClass.sDG0))
@@ -266,21 +267,33 @@ def run_code():
         FilesClass.write_statistic(t, step, stat_output,\
                                 q_cond_top  = EqClass.q_cond_top,\
                                 q_top       = EqClass.q_top,\
+                                q_bot       = EqClass.q_bot,\
                                 v           = EqClass.v_k,\
                                 avg_h_bot   = EqClass.h_bot_aver,\
                                 h_top_max   = EqClass.h_top,\
+                                dissipation   = EqClass.dissipation_now,\
+                                thickness   = EqClass.thickness_now,\
                                 time        = total_time,\
                                 timestep    = timestep_time)
+        
+        if (float(EqClass.thickness_now) > 167e3):
+            if (rank == 0):
+                print("\n----------------------------------------------")
+                print("\tSubsurface ocean completely frozen.")
+                print("\tStep:     ", '{:d}'.format(step))
+                print("\tTime:     ", '{:.3e}'.format(float(t/time_units)), time_units_string)
+                print("----------------------------------------------\n")
+            break
         
     FilesClass.Save_Paraview(t)
     FilesClass.Save_HDF5(step_output, step, EqClass.dt, t)
 
     if (rank == 0):
-            print("\n----------------------------------------------")
-            print("\tTermination condition satisfied.")
-            print("\tStep:     ", '{:d}'.format(step))
-            print("\tTime:     ", '{:.3e}'.format(float(t/time_units)), time_units_string)
-            print("----------------------------------------------\n")
+        print("\n----------------------------------------------")
+        print("\tTermination condition satisfied.")
+        print("\tStep:     ", '{:d}'.format(step))
+        print("\tTime:     ", '{:.3e}'.format(float(t/time_units)), time_units_string)
+        print("----------------------------------------------\n")
 
 if __name__ == "__main__":
     run_code()

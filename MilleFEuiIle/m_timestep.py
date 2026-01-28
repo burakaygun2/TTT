@@ -53,13 +53,13 @@ def time_step(mesh, v, v_mesh, H_max, composition, Temp, unit_scalar, t):
     
     if (time_step_strategy == "domain" or time_step_strategy == "convective"):
         # --- Determine minimum elememt size in the mesh ---
-        # x_min_ranks = length
-        # for f in facets(mesh):
-        #         for e in edges(f):
-        #             if (e.length()< x_min_ranks): x_min_ranks = e.length()
+        x_min_ranks = length
+        for f in facets(mesh):
+                for e in edges(f):
+                    if (e.length()< x_min_ranks): x_min_ranks = e.length()
         
-        # x_min = MPI.min(comm, x_min_ranks) 
-        x_min = 167e3/25.0
+        x_min = MPI.min(comm, x_min_ranks) 
+        # x_min = 167e3/25.0
 
         # --- Compute the maximum speed in the domain ---
         v_max = MPI.max(mesh.mpi_comm(), np.abs(v.vector().get_local()).max()) 
@@ -87,17 +87,19 @@ def time_step(mesh, v, v_mesh, H_max, composition, Temp, unit_scalar, t):
         if (solve_energy_problem == True):
             temp_aver = assemble(Temp*dx)/assemble(unit_scalar*dx)
             dt_cond = cfl*x_min**2*rho_s*cp(temp_aver, composition)/k(temp_aver, composition)
+            print(cfl, x_min, rho_s, cp(temp_aver, composition), k(temp_aver, composition))
             dt_list.append(dt_cond)
 
         # --- Mesh displacement time step ---
-        if (BC_Stokes_problem[0][0] == "free_surface" or BC_Stokes_problem[1][0] == "free_surface"):
-            v_max_mesh = MPI.max(mesh.mpi_comm(), np.abs(v_mesh.vector().get_local()).max()) 
-            dt_mesh = cfl*(height/1e3)/(v_max_mesh + 1e-15)
-            dt_list.append(dt_mesh)
+        # if (BC_Stokes_problem[0][0] == "free_surface" or BC_Stokes_problem[1][0] == "free_surface"):
+        #     v_max_mesh = MPI.max(mesh.mpi_comm(), np.abs(v_mesh.vector().get_local()).max()) 
+        #     dt_mesh = cfl*(height/1e3)/(v_max_mesh + 1e-15)
+        #     dt_list.append(dt_mesh)
+        #     print("appended")
         
         # --- Internal heating time step ---
-        if (tidal_dissipation == True):
-            dt_H = cfl*rho_s*cp(temp_aver, composition)*dT_max/H_max
-            dt_list.append(dt_H)
+        # if (tidal_dissipation == True):
+        #     dt_H = cfl*rho_s*cp(temp_aver, composition)*dT_max/H_max
+        #     dt_list.append(dt_H)
 
         return min(dt_list)

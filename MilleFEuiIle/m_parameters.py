@@ -10,6 +10,23 @@ size = MPI.size(comm)
 clatrates_thickness = int(sys.argv[1])*1e3
 viscosity_exponent = int(sys.argv[2])
 
+
+# --- Read the file with dissipation ---
+infile = open("dissipation_data.txt", "r") 
+# infile = open("dissipation.dat", "r") 
+lines = infile.readlines() 
+
+dissipation = []
+
+header = True
+for line in lines:
+   if (header == True):
+       header = False
+       continue
+   else:
+      sline = line.split(" ")
+      dissipation.append([float(sline[0]), float(sline[1])])
+
 mesh_movement = "ALE"
 initial_topography = False
 # --- Structure of this file ---
@@ -32,7 +49,8 @@ initial_topography = False
 #------------------------- 1/ OUTPUT FILES SETTINGS -------------------
 #----------------------------------------------------------------------
 # --- Name of the directory with results ---
-name = "convection_Titan_"+str(int(sys.argv[1]))+"km_"+str(viscosity_exponent)+"Pas"
+name = "convection_Titan_"+str(int(sys.argv[1]))+"km"
+# name = "convection_Titan_"+str(int(sys.argv[1]))+"km_"+str(viscosity_exponent)+"Pas"
 """
 :var: Name of the directory with the results. The directory with the results will be named ``data_name``.
 
@@ -146,11 +164,11 @@ Paraview_Output_Ini = ["temperature", "conductivity"]
 # q_bot 	= Heat flux over the bottom boundary
 # time		= Duration of the simulation (hours)
 # timestep	= Duration of the time step (seconds)
-stat_output = ["q_top", "time", "timestep"]
+stat_output = ["q_top", "q_bot", "dissipation", "thickness", "time", "timestep"]
 
 # --- Headers for the columns in the text file
 # --- Up to the user (order corredponding to "stat_output").
-stat_header = ["q_top (mW/m2)", "Time (h)", "dt (s)"]
+stat_header = ["q_top (mW/m2)", "q_bot (mW/m2)", "q_int (mW/m2)", "D (km)", "Time (h)", "dt (s)"]
 
 monitor_cache = False
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -206,7 +224,7 @@ Whether to reset time when ``reloading_HDF5 = True``.
 #----------------------------------------------------------------------
 
 # --- Criterion for ending the simulation, e.g., ["time", 1*Myr], ["step", 1000] or ["initial_condition", *]---
-termination_condition = ["time", 250*Myr]
+termination_condition = ["time", 4000*Myr]
 """ Time or step criterion for ending the simulation naturally.
 
 :var:  
@@ -242,7 +260,7 @@ weight_tracers_by_ratio = False
 #----------------------------------------------------------------------
 
 # --- Mesh height ---
-height = 167e3 # m
+height = clatrates_thickness # m
 """ Height of the rectangular mesh.
 
 :vartype: float
@@ -251,7 +269,7 @@ height = 167e3 # m
 """
 
 # --- Mesh length ---
-length = 167e3 # m
+length = clatrates_thickness # m
 """ Length of the rectangular mesh.
 
 :vartype: float
@@ -293,7 +311,7 @@ z_div = 50
 """
 
 # --- Number of nodes in horizontal direction ---
-x_div = int(z_div*(length/height)) # (keeps aspect ratio 1)
+x_div = 50 #int(z_div*(length/height)) # (keeps aspect ratio 1)
 """ Number of nodes in horizontal direction.
 
 :var: default ``int(z_div*(length/height))`` which keeps acpect ratio of the elements equal to 1
@@ -320,11 +338,11 @@ Method of dividing basic squares into mesh triangle elements.
 
 # --- Repeat within the [...] for multiple levels of refinement,
 # leave empty for no refinement ---
-# refinement = []
-refinement = [0, length, 0, 5e3,
-              0, length, height - (clatrates_thickness + z_div/height), height,
-              0, length, height - (clatrates_thickness + z_div/height/2.0), height,
-              0, length, height - (clatrates_thickness + z_div/height/4.0), height,]
+refinement = []
+# refinement = [0, length, 0, 5e3,
+#               0, length, height - (clatrates_thickness + z_div/height), height,
+#               0, length, height - (clatrates_thickness + z_div/height/2.0), height,
+#               0, length, height - (clatrates_thickness + z_div/height/4.0), height,]
 """ 
 :var: Minimum and maximum *x*- and *y*-coordinates of a rectangle area of the mesh to be refined, see :func:`m_mesh.MeshModule.refine_mesh`\ .
 
@@ -427,7 +445,7 @@ time_step_position = "stokes"# (right after Stokes problem) or "end" (at the end
 :meta hide-value:
 """
 
-time_step_strategy = "convective"
+time_step_strategy = "domain"
 """ Specifies the method for computing a new time step, see :func:`m_timestep.time_step`\ .
 
 :var:
@@ -475,7 +493,7 @@ error_type          = "maximum" # "maximum or integrated"
 
 # Boundary conditions for velocity (free_slip, no_slip, free surface, velocity, velocity_x, velocity_y)
 BC_Stokes_problem = [["free_slip"],#1 top boundary (1)
-                     ["free_slip"],#2 bottom boundary (2)
+                     ["free_surface"],#2 bottom boundary (2)
                      ["free_slip"],#3 left boundary (3)
                      ["free_slip"]]#4 right boundary (3)
 """
@@ -564,7 +582,7 @@ nonlinear_heat_equation = False
 
 # --- Boundary condition for heat transfer equation ---
 BC_heat_transfer   = [["temp", 90.0],     # top boundary    (1)
-                     ["temp", 240.0],     # bottom boundary (2)
+                     ["temp", 270.0],     # bottom boundary (2)
                      ["heat_flux", 0.0],  # left boundary   (3)
                      ["heat_flux", 0.0]]  # right boundary  (4)
 """
@@ -797,7 +815,7 @@ plasticity = False
 """
 
 # --- Phase transition at the bottom boundary ----
-phase_transition = False
+phase_transition = True
 """
 :var: Whether there is a phase transition at the ice-water boundary.
 
@@ -807,7 +825,7 @@ phase_transition = False
 """
 
 # --- Strength of the phase transition at the ice-water boundary ---
-DAL_factor = 0 # W/m3
+DAL_factor = 0.0 #1e-4 # W/m3
 """
 :var: Strength of the phase transition at the ice-water boundary due to the DAL effect
 

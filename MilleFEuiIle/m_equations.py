@@ -135,12 +135,15 @@ class Equations:
         self.height_fraction.assign(project(Expression("x[1]/height", height = height, degree=1), self.sCG1))
 
         self.q_top = Constant(1.0)
+        self.q_bot = Constant(1.0)
         self.q_cond_top = Constant(1.0)
 
         self._lambda = Constant(1.0)
 
         self.v_aver = Constant(1.0)
         self.v_top_aver = Constant(1.0)
+        self.thickness_now = Constant(height)
+        self.dissipation_now = Constant(0.0)
 
         # --- Top and bottom boundary topography ---        
         # self.h_top1     = Function(self.sCG1)
@@ -802,6 +805,15 @@ class Equations:
         
         self.shear_modulus.assign(project(G(self.composition), self.sDG0))
 
+    def read_dissipation(self):
+        self.thickness_now.assign(0.5*(assemble(self.unit_scalar*self.ds(4)) + assemble(self.unit_scalar*self.ds(3))))
+        value = 0
+        for i in range(len(dissipation)):
+            if (float(self.thickness_now)/1e3 < dissipation[i][0]):
+                value = dissipation[i][1]*1e12/(4.0*np.pi*(2570e3 - float(self.thickness_now)/1e3)**2)
+
+        return value
+        
     def compute_u(self):
         """ 
         :var: Updates the heat fluxes :math:`\\boldsymbol{q}_{\\rm ice}`  and :math:`\\boldsymbol{q}_{\\rm ocean}` and computes
@@ -809,7 +821,11 @@ class Equations:
         """
         self.q_ice.assign(project(-k(self.Temp, self.composition)*nabla_grad(self.Temp), self.vCG1))
         self.q_ice_aver.assign(assemble(sqrt(dot(self.q_ice, self.q_ice))*self.ds(2))/assemble(self.unit_scalar*self.ds(2)))
-        self.q_water.assign(project((self.q_ice_aver - DAL_factor*self.h_bot)*self.e_z, self.vCG1))
+        
+        # --- Dissipation from OCEANUS enters here ---
+        self.dissipation_now.assign(self.read_dissipation())
+        # self.q_water.assign(project((self.q_ice_aver - DAL_factor*self.h_bot)*self.e_z, self.vCG1))
+        self.q_water.assign(project((self.dissipation_now - DAL_factor*self.h_bot)*self.e_z, self.vCG1))
         self.u.assign(project(-dot(self.n_bot, self.q_ice - self.q_water)*self.n_bot/(Lt*rho_s), self.vCG1))
 
     def solve_topography_evolution(self):

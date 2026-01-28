@@ -247,6 +247,11 @@ class SaveFiles:
                 if (rank == 0):
                     file.write(("%.5E\t\t")%(value*1e3))
 
+            if (arg == "q_bot"):
+                value = kwargs["q_bot"]
+                if (rank == 0):
+                    file.write(("%.5E\t\t")%(value*1e3))
+
             if (arg == "vrms"):
                 value = rms_vel(kwargs["v"])
                 if (rank == 0):
@@ -260,6 +265,14 @@ class SaveFiles:
                 value = MPI.max(self.mesh.mpi_comm(), kwargs[arg].vector().max()) 
                 if (rank == 0):
                     file.write(("%.5E\t\t")%(value))
+
+            if (arg == "dissipation"):
+                if (rank == 0):
+                    file.write(("%.5E\t\t")%(kwargs[arg]*1e3))
+
+            if (arg == "thickness"):
+                if (rank == 0):
+                    file.write(("%.5E\t\t")%(kwargs[arg]/1e3))
 
             if (arg == "time"):
                 value = kwargs["time"]

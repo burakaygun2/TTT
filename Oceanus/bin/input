@@ -1,7 +1,7 @@
 ## RADIAL PROFILE FILE
-'/nfshk2/aygun/TTT/profiles/titan_test_profile.dat'
+'/nfsmk/kihoulou/GEO/TTT/TTT/profiles/titan_test_profile.dat'
 ## OUTPUT DIRECTORY (1)
-'/nfshk2/aygun/TTT/single_Oceanus_run'
+'/nfsmk/kihoulou/GEO/TTT/TTT/results'
 
 ## NAME OF THE BODY (1)
 'Titan'
