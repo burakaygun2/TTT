@@ -249,6 +249,7 @@ def run_code():
         EqClass.heating.assign(project(tidal_heating(EqClass.visc), ElemClass.sDG0))
 
         EqClass.q_top_time.assign(EqClass.q_top_time*(step - 1.0)/step + EqClass.q_top/step)
+        EqClass.vrms_time.assign(rms_vel(EqClass.v))
 
         # --- Check whether to save results? ---> If yes, save them.
         step_output, output_now = Output_Timing(step, step_output, t, time_output)
@@ -261,8 +262,6 @@ def run_code():
             FilesClass.Save_Paraview(t)
             FilesClass.Save_HDF5(step_output, step, EqClass.dt, t)
 
-            EqClass.q_top_time_prev = EqClass.q_top_time
-
         code_now        = time.time()
         total_time      = (code_now - code_start)/3600.0
         timestep_time   = (code_now - code_now_k)
@@ -271,7 +270,6 @@ def run_code():
         FilesClass.write_statistic(t, step, stat_output,\
                                 q_cond_top  = EqClass.q_cond_top,\
                                 q_top       = EqClass.q_top,\
-                                q_top_time       = EqClass.q_top_time,\
                                 q_bot       = EqClass.q_bot,\
                                 v           = EqClass.v_k,\
                                 avg_h_bot   = EqClass.h_bot_aver,\
@@ -281,7 +279,7 @@ def run_code():
                                 time        = total_time,\
                                 timestep    = timestep_time)
         
-        # --- Shell thickness termination criteria ---
+        # --- Frozen ice shell termination criterium ---
         # if (float(EqClass.thickness_now) > 167e3):
         #     if (rank == 0):
         #         print("\n----------------------------------------------")
@@ -291,14 +289,83 @@ def run_code():
         #         print("----------------------------------------------\n")
         #     break
 
-        if (float(t) > 2*Myr and float(EqClass.q_top_time) > float(EqClass.q_top_time_prev)*0.95 and float(EqClass.q_top_time) < float(EqClass.q_top_time_prev)*1.05):
+        # --- Equilibrated heat flux termination criterium ---
+        if (float(t) > 3*Myr and step%10 == 0):
+            infile = open("data_" + name + "/statistics.dat", "r") 
+            lines = infile.readlines() 
+
+            read_time = []
+            read_qtop = []
+            read_qbot = []
+            read_vrms = []
+
+            header = True
+            for line in lines:
+                sline = line.split("\t\t")
+
+                if (header==True):
+                    header = False
+                    continue
+
+                read_time.append(float(sline[0]))
+                read_qtop.append(float(sline[2])) 
+                read_qbot.append(float(sline[3])) 
+                read_vrms.append(float(sline[4]))
+
+            qtop1, qbot1, vrms1 = [], [], []
+            qtop2, qbot2, vrms2 = [], [], []
+            qtop3, qbot3, vrms3 = [], [], []
+
+            for i in range(0, len(read_time)-1):
+                if (read_time[i] > read_time[-1] - 1):
+                    qtop1.append(read_qtop[i])
+                    qbot1.append(read_qbot[i])
+                    vrms1.append(read_vrms[i])
+
+                if (read_time[i] > read_time[-1] - 2):
+                    qtop2.append(read_qtop[i])
+                    qbot2.append(read_qbot[i])
+                    vrms2.append(read_vrms[i])
+
+                if (read_time[i] > read_time[-1] - 3):
+                    qtop3.append(read_qtop[i])
+                    qbot3.append(read_qbot[i])
+                    vrms3.append(read_vrms[i])
+
+            qtop1_aver = sum(qtop1) / len(qtop1)
+            qtop2_aver = sum(qtop2) / len(qtop2)
+            qtop3_aver = sum(qtop3) / len(qtop3)
+
+            qbot1_aver = sum(qbot1) / len(qbot1)
+            qbot2_aver = sum(qbot2) / len(qbot2)
+            qbot3_aver = sum(qbot3) / len(qbot3)
+
+            vrms1_aver = sum(vrms1) / len(vrms1)
+            vrms2_aver = sum(vrms2) / len(vrms2)
+            vrms3_aver = sum(vrms3) / len(vrms3)
+            
+            tol_q = 1e-3
+            tol_v = 1e-2
+            if ((1.0 + tol_q)*qtop3_aver > qtop1_aver > (1.0 - tol_q)*qtop3_aver and (1.0 + tol_q)*qtop3_aver > qtop2_aver > (1.0 - tol_q)*qtop3_aver
+                and (1.0 + tol_q)*qbot3_aver > qbot1_aver > (1.0 - tol_q)*qbot3_aver and (1.0 + tol_q)*qbot3_aver > qbot2_aver > (1.0 - tol_q)*qbot3_aver
+                and (1.0 + tol_v)*vrms3_aver > vrms1_aver > (1.0 - tol_v)*vrms3_aver and (1.0 + tol_v)*vrms3_aver > vrms2_aver > (1.0 - tol_v)*vrms3_aver):
+                equilibrated = True
+            else:
+                equilibrated = False
+            
             if (rank == 0):
-                print("\n----------------------------------------------")
-                print("\tSurface heat flux stabilized.")
-                print("\tStep:     ", '{:d}'.format(step))
-                print("\tTime:     ", '{:.3e}'.format(float(t/time_units)), time_units_string)
-                print("----------------------------------------------\n")
-            break
+                print(qtop1_aver, qtop2_aver, qtop3_aver, equilibrated)
+                print(qbot1_aver, qbot2_aver, qbot3_aver, equilibrated)
+                print(vrms1_aver, vrms2_aver, vrms3_aver, equilibrated)
+
+            if (equilibrated == True):
+                if (rank == 0):
+                    print("\n----------------------------------------------")
+                    print("\tSteady state reached.")
+                    print("\tStep:     ", '{:d}'.format(step))
+                    print("\tTime:     ", '{:.3e}'.format(float(t/time_units)), time_units_string)
+                    print("----------------------------------------------\n")
+                break
         
     FilesClass.Save_Paraview(t)
     FilesClass.Save_HDF5(step_output, step, EqClass.dt, t)

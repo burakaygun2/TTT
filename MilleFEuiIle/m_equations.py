@@ -140,6 +140,12 @@ class Equations:
 
         self.q_top_time = Constant(1.0)
         self.q_top_time_prev = Constant(1.0)
+        
+        self.q_top_prev = Constant(1.0)
+        self.q_bot_prev = Constant(1.0)
+
+        self.vrms_time = Constant(1.0)
+        self.vrms_time_prev = Constant(1.0)
 
         self._lambda = Constant(1.0)
 

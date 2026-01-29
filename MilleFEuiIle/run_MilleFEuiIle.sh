@@ -1,5 +1,5 @@
 # --- Number of cores available ---
-ncores=16
+ncores=8
 
 # --- Number of cores for MPI ---
 n_cores=1
@@ -8,7 +8,7 @@ n_cores=1
 for thickness in 40 50 60 70 80 90 100 110 120 130 140 150 160 167
     do
     # --- Loop over the ice shell thickness (km) ---
-    for viscosity in 15 14 13
+    for viscosity in 15 14 #13
         do
         while true
             do 

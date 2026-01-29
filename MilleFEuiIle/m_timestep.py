@@ -87,7 +87,6 @@ def time_step(mesh, v, v_mesh, H_max, composition, Temp, unit_scalar, t):
         if (solve_energy_problem == True):
             temp_aver = assemble(Temp*dx)/assemble(unit_scalar*dx)
             dt_cond = cfl*x_min**2*rho_s*cp(temp_aver, composition)/k(temp_aver, composition)
-            print(cfl, x_min, rho_s, cp(temp_aver, composition), k(temp_aver, composition))
             dt_list.append(dt_cond)
 
         # --- Mesh displacement time step ---

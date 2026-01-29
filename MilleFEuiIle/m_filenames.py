@@ -262,6 +262,11 @@ class SaveFiles:
                 if (rank == 0):
                     file.write(("%.5E\t\t")%(value))
 
+            if (arg == "vrms_time"):
+                value = kwargs["vrms_time"]
+                if (rank == 0):
+                    file.write(("%.5E\t\t")%(value))
+
             if (arg == "avg_h_bot"):
                 if (rank == 0):
                     file.write(("%.5E\t\t")%(kwargs[arg]))

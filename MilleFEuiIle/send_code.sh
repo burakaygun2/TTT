@@ -1,6 +1,6 @@
 # --- The sending script for the Department of Geophysics cluster ---
 # --- Target machine, user and directory ---
-machine="nfsy5"
+machine="nfs00"
 user="kihoulou"
 dir="TTT" 
 

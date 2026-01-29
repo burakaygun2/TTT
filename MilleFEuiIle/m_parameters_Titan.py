@@ -49,8 +49,8 @@ initial_topography = False
 #------------------------- 1/ OUTPUT FILES SETTINGS -------------------
 #----------------------------------------------------------------------
 # --- Name of the directory with results ---
-name = "convection_Titan_"+str(int(sys.argv[1]))+"km"
-# name = "convection_Titan_"+str(int(sys.argv[1]))+"km_"+str(viscosity_exponent)+"Pas"
+# name = "convection_Titan_"+str(int(sys.argv[1]))+"km"
+name = "Titan_"+str(int(sys.argv[1]))+"km_"+str(viscosity_exponent)+"Pas"
 """
 :var: Name of the directory with the results. The directory with the results will be named ``data_name``.
 
@@ -164,11 +164,11 @@ Paraview_Output_Ini = ["temperature", "conductivity"]
 # q_bot 	= Heat flux over the bottom boundary
 # time		= Duration of the simulation (hours)
 # timestep	= Duration of the time step (seconds)
-stat_output = ["q_top", "q_top_time", "q_bot", "time", "timestep"]
+stat_output = ["q_top",  "q_bot", "vrms", "time", "timestep"]
 
 # --- Headers for the columns in the text file
 # --- Up to the user (order corredponding to "stat_output").
-stat_header = ["q_top (mW/m2)", "q_topT (mW/m2)", "q_bot (mW/m2)", "Time (h)", "dt (s)"]
+stat_header = ["q_top (mW/m2)", "q_bot (mW/m2)", "vrms (m/s)", "Time (h)", "dt (s)"]
 
 monitor_cache = False
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -311,7 +311,7 @@ z_div = 50
 """
 
 # --- Number of nodes in horizontal direction ---
-x_div = 50 #int(z_div*(length/height)) # (keeps aspect ratio 1)
+x_div = int(z_div*(length/height)) # (keeps aspect ratio 1)
 """ Number of nodes in horizontal direction.
 
 :var: default ``int(z_div*(length/height))`` which keeps acpect ratio of the elements equal to 1
@@ -665,11 +665,11 @@ tidal_dissipation           = True
 """
 
 initial_tidal_dissipation   = True
-heating_model               = "Maxwell" # Maxwell, Andrade or none
+heating_model               = "Andrade" # Maxwell, Andrade or none
 H_max = 5e-8 # W m^{-3}
 
 # Andrade parameters
-alpha_and = 0.2
+alpha_and = 0.3
 
 # --- Find conductive initial condition ---
 init_cond_profile = True
