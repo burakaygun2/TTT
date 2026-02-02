@@ -21,7 +21,7 @@ def tidal_heating(visc):
     """
 
     # --- Set for Europa ---
-    visc_max = 3.52e9/7.25e-7
+    visc_max = 3.52e9/4.56e-6
     nu = visc_max/visc
 
     if (heating_model == "Maxwell"):

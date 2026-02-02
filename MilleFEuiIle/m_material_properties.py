@@ -76,7 +76,7 @@ def k(Temp, composition):
 
         """
 
-        k_H2O = 567.0/Temp
+        k_H2O = 612.0/Temp
         return k_H2O
 
         # if (clatrates_thickness > 0.0):

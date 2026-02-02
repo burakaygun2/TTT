@@ -7,7 +7,7 @@ comm = MPI.comm_world
 rank = MPI.rank(comm)
 size = MPI.size(comm)
 
-clatrates_thickness = int(sys.argv[1])*1e3
+ice_thickness = int(sys.argv[1])*1e3
 viscosity_exponent = int(sys.argv[2])
 
 
@@ -49,7 +49,6 @@ initial_topography = False
 #------------------------- 1/ OUTPUT FILES SETTINGS -------------------
 #----------------------------------------------------------------------
 # --- Name of the directory with results ---
-# name = "convection_Titan_"+str(int(sys.argv[1]))+"km"
 name = "Titan_"+str(int(sys.argv[1]))+"km_"+str(viscosity_exponent)+"Pas"
 """
 :var: Name of the directory with the results. The directory with the results will be named ``data_name``.
@@ -260,7 +259,7 @@ weight_tracers_by_ratio = False
 #----------------------------------------------------------------------
 
 # --- Mesh height ---
-height = clatrates_thickness # m
+height = ice_thickness # m
 """ Height of the rectangular mesh.
 
 :vartype: float
@@ -269,7 +268,7 @@ height = clatrates_thickness # m
 """
 
 # --- Mesh length ---
-length = clatrates_thickness # m
+length = ice_thickness*2 # m
 """ Length of the rectangular mesh.
 
 :vartype: float
@@ -302,7 +301,18 @@ mesh_name 	= ""
 """
 
 # --- Basic mesh resolution if not loading mesh ---
-z_div = 25
+Ra_bot = 1.6e-4*920.0**2*1.3*2100.0*(265.0 - 90.0)*ice_thickness**3/(2.3*10.0**viscosity_exponent)
+if (np.log10(Ra_bot) < 7):       # Conduction
+   z_div = 25
+elif (np.log10(Ra_bot) < 8.5):  # Conduction
+   z_div = 50
+elif (np.log10(Ra_bot) < 9.5):  # Conduction
+   z_div = 75
+else:                            # Vigorous convection
+   z_div = 100
+
+print(ice_thickness/1e3, "km", viscosity_exponent, "Pa s", z_div)
+exit()
 """ Number of nodes in vertical direction.
 
 :vartype: integer
@@ -340,9 +350,9 @@ Method of dividing basic squares into mesh triangle elements.
 # leave empty for no refinement ---
 refinement = []
 # refinement = [0, length, 0, 5e3,
-#               0, length, height - (clatrates_thickness + z_div/height), height,
-#               0, length, height - (clatrates_thickness + z_div/height/2.0), height,
-#               0, length, height - (clatrates_thickness + z_div/height/4.0), height,]
+#               0, length, height - (ice_thickness + z_div/height), height,
+#               0, length, height - (ice_thickness + z_div/height/2.0), height,
+#               0, length, height - (ice_thickness + z_div/height/4.0), height,]
 """ 
 :var: Minimum and maximum *x*- and *y*-coordinates of a rectangle area of the mesh to be refined, see :func:`m_mesh.MeshModule.refine_mesh`\ .
 
@@ -461,7 +471,7 @@ time_step_strategy = "domain"
 """
 
 # --- The CFL parameter ---
-cfl = 0.99
+cfl = 1.0
 """ 
 :var: The CFL parameter, determining the length of the adaptive time step, see :func:`m_timestep.time_step`\ .
 :vartype: float
@@ -672,7 +682,7 @@ H_max = 5e-8 # W m^{-3}
 alpha_and = 0.3
 
 # --- Find conductive initial condition ---
-init_cond_profile = True
+init_cond_profile = False
 """
 :var: Whether to find an initial conductive profile as an initial condition for the heat transfer problem.
 
@@ -744,7 +754,7 @@ dt_max = 0.1*Myr
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # === PHYSICAL PARAMETERS ===
 # --- Gravity acceleratuin ---
-g 		= 1.3				# m s^-2
+g 		= 1.35				# m s^-2
 """
 :var: Gravity acceleration.
 
